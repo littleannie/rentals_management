@@ -12,25 +12,36 @@ class Api::V1::ListingsController < Api::V1::BaseController
 
   def create
     @listing = Listing.new(params_listing)
-    render json: @listing
+    if @listing.save
+      render json: @listing
+    else
+      render json: { error: 'Unable to create listing' }, status: 400
+    end
   end
 
   def update
-    @listing = Listing.update(params_listing)
-    render json: @listing
+    if @listing.update(params_listing)
+      render json: @listing
+    else
+      render json: { error: 'Unable to update listing' }, status: 400
+    end
   end
 
   def destroy
-    @listing.destroy
+    if @listing.destroy
+      render json: { error: 'Successfully deleted' }, status: 200
+    else
+      render json: { error: 'Unable to destroy listing' }, status: 400
+    end
   end
 
-private
+  private
 
-def set_listing
-  @listing = Listing.find(params[:id])
-end
+  def set_listing
+    @listing = Listing.find(params[:id])
+  end
 
-def params_listing
-  params.require(:listing).permit(:num_rooms)
-end
+  def params_listing
+    params.require(:listing).permit(:num_rooms)
+  end
 end
